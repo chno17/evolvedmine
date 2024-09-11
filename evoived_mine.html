@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <style>
+        * {
+            text-align: center;
+            background-color: darkgray;
+        }
+
+        #board {
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        #board tr td {
+            border: 1px solid black;
+            background: gray;
+            width: 16px;
+            height: 16px;
+            text-align: center;
+        }
+
+        #board tr td.clicked {
+            background: darkblue;
+        }
+
+        #board tr td.mine {
+            background: rgb(210, 210, 0);
+        }
+    </style>
+</head>
+
+<body>
+    <h1>지뢰찾기</h1>
+    <table id=board>
+    </table>
+    <BUTTON onclick="genGrid();">기본 게임</BUTTON>
+    <BUtton onclick="special_mode()">특수 게임</BUtton>
+    <script>
+        let grid = document.getElementById("board");
+        genGrid();
+
+        function genGrid() {
+            grid.innerHTML = "";
+            for (let i = 0; i < 20; i++) {
+                row = grid.insertRow(i);
+                for (var j = 0; j < 20; j++) {
+                    cell = row.insertCell(j);
+                    cell.onclick = function () { clickBox(this); };
+                    var mine = document.createAttribute("mine");
+                    if (Math.random() <0.0824)
+                        mine.value = "true";
+                    else
+                        mine.value = "false";
+                    cell.setAttributeNode(mine);
+                }
+            }
+        }
+
+        function clickBox(cell) {
+            if (cell.getAttribute("mine") == "true") {
+                cell.className = "mine";
+                alert("게임이 종료되었습니다.");
+            } else {
+                cell.className = "clicked";
+            }
+        }
+
+        function special_mode() {
+            let cjflehla = [];
+            for (let i = 0; i < 20; i++) {
+                for (let j = 0; j < 20; j++) {
+                    let cell = grid.rows[i].cells[j];
+                    if (cell.getAttribute("mine") === "true") {
+                        if (!iscjflehla(i, j, cjflehla)) {
+                            mine33(i, j, cjflehla);
+                        }
+                    }
+                }
+            }
+        }
+            // 아래부터 생성형 활용
+        function iscjflehla(row, col, cjflehla) {
+            // 이미 처리된 지뢰 좌표인지 확인
+            return cjflehla.some(([r, c]) => r === row && c === col);
+        }
+
+        function mine33(row, col, cjflehla) {
+            // 처리된 지뢰 좌표 추가
+            cjflehla.push([row, col]);
+
+            // 3x3 범위의 셀들을 모두 지뢰로 설정
+            for (let i = row - 1; i <= row + 1; i++) {
+                for (let j = col - 1; j <= col + 1; j++) {
+                    if (i >= 0 && i < 20 && j >= 0 && j < 20) { // 유효한 좌표 체크
+                        let cell = grid.rows[i].cells[j];
+                        cell.setAttribute("mine", "true");
+                        // 새롭게 추가된 지뢰 좌표도 기록
+                        cjflehla.push([i, j]);
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
